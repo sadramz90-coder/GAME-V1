@@ -5,7 +5,12 @@
 
 // ===== WEBSOCKET CONFIGURATION =====
 const WS_CONFIG = {
-    url: `ws://${window.location.hostname}:${window.location.port || 3000}`,
+    // ✅ اصلاح: تشخیص خودکار پروتکل (http -> ws, https -> wss)
+    get url() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host = window.location.host;
+        return `${protocol}//${host}`;
+    },
     reconnectDelay: 3000,
     maxReconnectAttempts: 5
 };
@@ -32,7 +37,10 @@ class GameWebSocket {
         this.isConnecting = true;
         
         try {
-            this.socket = new WebSocket(WS_CONFIG.url);
+            const wsUrl = WS_CONFIG.url;
+            console.log(`🔗 Connecting to WebSocket: ${wsUrl}`);
+            
+            this.socket = new WebSocket(wsUrl);
             
             this.socket.onopen = () => {
                 console.log('🔗 WebSocket connected');
@@ -478,6 +486,9 @@ window.gameSocket = gameSocket;
 document.addEventListener('DOMContentLoaded', function() {
     const userId = localStorage.getItem('userId');
     if (userId) {
-        gameSocket.connect(userId);
+        // اتصال با تأخیر کوچک برای اطمینان از آماده بودن صفحه
+        setTimeout(() => {
+            gameSocket.connect(userId);
+        }, 500);
     }
 });
