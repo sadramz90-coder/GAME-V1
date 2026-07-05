@@ -11,7 +11,10 @@ const UserManager = require('./userManager');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({ 
+    server,
+    perMessageDeflate: false
+});
 
 // Middleware
 app.use(express.json());
