@@ -162,15 +162,31 @@
     
     <!-- ===== اسکریپت مخفی کردن لودینگ ===== -->
     <script>
-        // این اسکریپت بعد از ۳ ثانیه لودینگ رو مخفی میکنه (در صورتی که WebSocket هنوز وصل نشده)
-        // اما WebSocket خودش وقتی وصل شد، لودینگ رو مخفی میکنه
+        // تابع مخفی کردن لودینگ از هر جایی قابل صدا زدنه
+        window.hideLoadingOverlay = function() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                console.log('✅ Loading overlay hidden from index.html');
+            }
+        };
+
+        // بعد از ۴ ثانیه لودینگ رو مخفی کن (فال‌بک)
         setTimeout(function() {
             const overlay = document.getElementById('loadingOverlay');
             if (overlay && !overlay.classList.contains('hidden')) {
                 console.log('⏱️ Force hiding loading overlay after timeout');
                 overlay.classList.add('hidden');
             }
-        }, 5000);
+        }, 4000);
+
+        // اگه کاربر لاگین نیست، بره به صفحه ورود
+        document.addEventListener('DOMContentLoaded', function() {
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                window.location.href = '/login.html';
+            }
+        });
     </script>
 </body>
 </html>
