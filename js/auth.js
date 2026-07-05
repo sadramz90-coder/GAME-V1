@@ -33,9 +33,9 @@ function checkAuthStatus() {
         // Get fresh user data
         fetchUserData(userId);
     } else {
-        // Check if on login page
-        if (!window.location.pathname.includes('login')) {
-            window.location.href = '/login';
+        // اگر لاگین نیست، بره به صفحه ورود
+        if (!window.location.pathname.includes('login') && !window.location.pathname.includes('index.html')) {
+            window.location.href = '/login.html';
         }
     }
 }
@@ -55,12 +55,21 @@ async function fetchUserData(userId) {
             localStorage.setItem('coins', data.user.coins || 0);
             
             updateUI();
+            
+            // ✅ بعد از دریافت اطلاعات کاربر، لودینگ رو مخفی کن (اگه هنوز مخفی نشده)
+            if (typeof hideLoadingOverlay === 'function') {
+                hideLoadingOverlay();
+            }
         } else {
             console.error('Failed to fetch user data');
             logout();
         }
     } catch (error) {
         console.error('Error fetching user data:', error);
+        // حتی با خطا هم لودینگ رو مخفی کن
+        if (typeof hideLoadingOverlay === 'function') {
+            hideLoadingOverlay();
+        }
     }
 }
 
@@ -115,7 +124,7 @@ function logout() {
     }
     
     // Redirect to login
-    window.location.href = '/login';
+    window.location.href = '/login.html';
 }
 
 // ===== UPDATE COINS =====
@@ -206,6 +215,15 @@ document.addEventListener('click', function(event) {
     }
 });
 
+// ===== HIDE LOADING OVERLAY (اضافه شده) =====
+function hideLoadingOverlay() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+        console.log('✅ Loading overlay hidden from auth.js');
+    }
+}
+
 // ===== EXPOSE FUNCTIONS GLOBALLY =====
 window.AuthState = AuthState;
 window.logout = logout;
@@ -214,3 +232,4 @@ window.showNotification = showNotification;
 window.showLeaderboard = showLeaderboard;
 window.closeModal = closeModal;
 window.toggleUserMenu = toggleUserMenu;
+window.hideLoadingOverlay = hideLoadingOverlay;
