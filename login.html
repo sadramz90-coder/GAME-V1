@@ -6,6 +6,31 @@
     <title>ورود | Tic-Tac-Toe Royale</title>
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* استایل ساده برای لودینگ داخل صفحه لاگین */
+        .auth-loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: var(--gold);
+        }
+        .auth-loading.show {
+            display: block;
+        }
+        .auth-loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,215,0,0.1);
+            border-top: 3px solid var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
     <div class="auth-container">
@@ -25,6 +50,12 @@
                 <button class="tab-btn" data-tab="register" onclick="switchTab('register')">
                     <i class="fas fa-user-plus"></i> ثبت نام
                 </button>
+            </div>
+
+            <!-- لودینگ -->
+            <div class="auth-loading" id="authLoading">
+                <div class="spinner"></div>
+                <p>در حال ورود...</p>
             </div>
 
             <!-- فرم ورود -->
@@ -85,8 +116,7 @@
 
     <script>
         // ============================================
-        // LOGIN PAGE SCRIPTS - کاملاً اصلاح شده
-        // Designed by S A D R A
+        // LOGIN PAGE SCRIPTS - ساده و بدون مشکل
         // ============================================
 
         // ===== SWITCH BETWEEN TABS =====
@@ -97,14 +127,14 @@
             document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
             document.getElementById(`${tab}Form`).classList.add('active');
             
-            // Clear any existing messages
+            // Clear messages
             const error = document.querySelector('.auth-error');
             if (error) error.remove();
             const success = document.querySelector('.auth-success');
             if (success) success.remove();
         }
 
-        // ===== TOGGLE PASSWORD VISIBILITY =====
+        // ===== TOGGLE PASSWORD =====
         function togglePassword(inputId, icon) {
             const input = document.getElementById(inputId);
             if (input.type === 'password') {
@@ -118,6 +148,21 @@
             }
         }
 
+        // ===== SHOW/HIDE LOADING =====
+        function showLoading(show) {
+            const loading = document.getElementById('authLoading');
+            const forms = document.querySelectorAll('.auth-form');
+            if (loading) {
+                if (show) {
+                    loading.classList.add('show');
+                    forms.forEach(f => f.style.display = 'none');
+                } else {
+                    loading.classList.remove('show');
+                    forms.forEach(f => f.style.display = '');
+                }
+            }
+        }
+
         // ===== HANDLE LOGIN =====
         async function handleLogin(e) {
             e.preventDefault();
@@ -125,11 +170,12 @@
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
             
-            // Validation
             if (!username || !password) {
                 showAuthError('لطفاً همه فیلدها را پر کنید');
                 return;
             }
+
+            showLoading(true);
 
             try {
                 const response = await fetch('/api/login', {
@@ -141,21 +187,22 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    // Save user data
                     localStorage.setItem('userId', data.userId);
                     localStorage.setItem('username', data.user.username);
                     localStorage.setItem('coins', data.user.coins || 0);
                     
-                    console.log('✅ Login successful, redirecting to game...');
+                    console.log('✅ Login successful, redirecting...');
                     
-                    // ✅ اصلاح: ریدایرکت به صفحه اصلی با اسم کامل
+                    // ✅ ریدایرکت ساده به صفحه اصلی
                     window.location.href = '/index.html';
                 } else {
+                    showLoading(false);
                     showAuthError(data.message || 'نام کاربری یا رمز عبور اشتباه است');
                 }
             } catch (error) {
+                showLoading(false);
                 console.error('Login error:', error);
-                showAuthError('خطا در ارتباط با سرور. لطفاً مجدداً تلاش کنید.');
+                showAuthError('خطا در ارتباط با سرور');
             }
         }
 
@@ -167,7 +214,6 @@
             const password = document.getElementById('registerPassword').value.trim();
             const confirm = document.getElementById('registerConfirmPassword').value.trim();
 
-            // Validations
             if (!username || !password || !confirm) {
                 showAuthError('لطفاً همه فیلدها را پر کنید');
                 return;
@@ -188,6 +234,8 @@
                 return;
             }
 
+            showLoading(true);
+
             try {
                 const response = await fetch('/api/register', {
                     method: 'POST',
@@ -198,55 +246,43 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    // Save user data
                     localStorage.setItem('userId', data.userId);
                     localStorage.setItem('username', data.user.username);
                     localStorage.setItem('coins', data.user.coins || 0);
                     
-                    showAuthSuccess('🎉 ثبت نام با موفقیت انجام شد! به بازی خوش آمدید');
+                    showAuthSuccess('🎉 ثبت نام موفق! در حال انتقال...');
                     
-                    console.log('✅ Registration successful, redirecting to game...');
-                    
-                    // ✅ اصلاح: ریدایرکت به صفحه اصلی با تأخیر کم
                     setTimeout(() => {
                         window.location.href = '/index.html';
-                    }, 1500);
-                    
+                    }, 1000);
                 } else {
+                    showLoading(false);
                     showAuthError(data.message || 'خطا در ثبت نام');
                 }
             } catch (error) {
+                showLoading(false);
                 console.error('Registration error:', error);
-                showAuthError('خطا در ارتباط با سرور. لطفاً مجدداً تلاش کنید.');
+                showAuthError('خطا در ارتباط با سرور');
             }
         }
 
-        // ===== SHOW ERROR MESSAGE =====
+        // ===== SHOW ERROR =====
         function showAuthError(message) {
-            // Remove existing messages
-            const existing = document.querySelector('.auth-error');
-            if (existing) existing.remove();
-            const existingSuccess = document.querySelector('.auth-success');
-            if (existingSuccess) existingSuccess.remove();
+            document.querySelector('.auth-error')?.remove();
+            document.querySelector('.auth-success')?.remove();
             
             const div = document.createElement('div');
             div.className = 'auth-error';
             div.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
             document.querySelector('.auth-card').appendChild(div);
             
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                if (div.parentNode) div.remove();
-            }, 5000);
+            setTimeout(() => div.remove(), 5000);
         }
 
-        // ===== SHOW SUCCESS MESSAGE =====
+        // ===== SHOW SUCCESS =====
         function showAuthSuccess(message) {
-            // Remove existing messages
-            const existing = document.querySelector('.auth-success');
-            if (existing) existing.remove();
-            const existingError = document.querySelector('.auth-error');
-            if (existingError) existingError.remove();
+            document.querySelector('.auth-success')?.remove();
+            document.querySelector('.auth-error')?.remove();
             
             const div = document.createElement('div');
             div.className = 'auth-success';
@@ -254,17 +290,13 @@
             document.querySelector('.auth-card').appendChild(div);
         }
 
-        // ===== CHECK IF USER IS ALREADY LOGGED IN =====
-        (function checkExistingUser() {
-            const userId = localStorage.getItem('userId');
-            if (userId) {
-                // User is already logged in, redirect to game
-                console.log('🔄 User already logged in, redirecting...');
-                window.location.href = '/index.html';
-            }
-        })();
+        // ===== CHECK EXISTING USER =====
+        if (localStorage.getItem('userId')) {
+            console.log('🔄 Already logged in, redirecting...');
+            window.location.href = '/index.html';
+        }
 
-        // ===== EXPOSE FUNCTIONS GLOBALLY =====
+        // ===== EXPOSE =====
         window.switchTab = switchTab;
         window.togglePassword = togglePassword;
         window.handleLogin = handleLogin;
