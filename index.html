@@ -8,16 +8,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <!-- Overlay برای لودینگ -->
+    <!-- ===== OVERLAY لودینگ ===== -->
     <div id="loadingOverlay">
         <div class="loader">
             <div class="gold-ring"></div>
             <div class="gold-ring2"></div>
             <span>👑 S A D R A</span>
+            <p style="margin-top: 15px; color: #888; font-size: 14px;" id="loadingStatus">در حال اتصال...</p>
         </div>
     </div>
 
-    <!-- هدر اصلی -->
+    <!-- ===== هدر اصلی ===== -->
     <header class="main-header">
         <div class="header-content">
             <div class="logo-section">
@@ -42,7 +43,7 @@
         </div>
     </header>
 
-    <!-- منوی کاربری -->
+    <!-- ===== منوی کاربری ===== -->
     <div class="user-menu" id="userMenu">
         <a href="profile.html"><i class="fas fa-user"></i> پروفایل</a>
         <a href="shop.html"><i class="fas fa-store"></i> فروشگاه</a>
@@ -50,11 +51,11 @@
         <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> خروج</a>
     </div>
 
-    <!-- بخش اصلی بازی -->
+    <!-- ===== بخش اصلی بازی ===== -->
     <main class="game-container">
         <div class="game-wrapper">
             <!-- وضعیت بازی -->
-            <div class="game-status" id="gameStatus">
+            <div class="game-status">
                 <div class="status-card">
                     <i class="fas fa-gamepad gold-icon"></i>
                     <span id="statusText">برای شروع بازی، روی "شروع بازی" کلیک کنید</span>
@@ -130,7 +131,7 @@
         </div>
     </main>
 
-    <!-- فوتر -->
+    <!-- ===== فوتر ===== -->
     <footer class="main-footer">
         <div class="footer-content">
             <span class="designer-credit">
@@ -142,7 +143,7 @@
         </div>
     </footer>
 
-    <!-- جدول امتیازات (مودال) -->
+    <!-- ===== جدول امتیازات (مودال) ===== -->
     <div class="modal" id="leaderboardModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -158,5 +159,18 @@
     <script src="js/auth.js"></script>
     <script src="js/websocket.js"></script>
     <script src="js/game.js"></script>
+    
+    <!-- ===== اسکریپت مخفی کردن لودینگ ===== -->
+    <script>
+        // این اسکریپت بعد از ۳ ثانیه لودینگ رو مخفی میکنه (در صورتی که WebSocket هنوز وصل نشده)
+        // اما WebSocket خودش وقتی وصل شد، لودینگ رو مخفی میکنه
+        setTimeout(function() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay && !overlay.classList.contains('hidden')) {
+                console.log('⏱️ Force hiding loading overlay after timeout');
+                overlay.classList.add('hidden');
+            }
+        }, 5000);
+    </script>
 </body>
 </html>
