@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود | Tic-Tac-Toe Royale</title>
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="crown-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <h1 class="auth-title">TIC-TAC-TOE <span class="gold-text">ROYALE</span></h1>
+                <p class="auth-subtitle">by <span class="gold-text">S A D R A</span></p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="login" onclick="switchTab('login')">
+                    <i class="fas fa-sign-in-alt"></i> ورود
+                </button>
+                <button class="tab-btn" data-tab="register" onclick="switchTab('register')">
+                    <i class="fas fa-user-plus"></i> ثبت نام
+                </button>
+            </div>
+
+            <!-- فرم ورود -->
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> نام کاربری</label>
+                    <input type="text" id="loginUsername" placeholder="نام کاربری خود را وارد کنید" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> رمز عبور</label>
+                    <input type="password" id="loginPassword" placeholder="رمز عبور خود را وارد کنید" required>
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('loginPassword', this)"></i>
+                </div>
+                <button type="submit" class="auth-btn gold-btn">
+                    <i class="fas fa-sign-in-alt"></i> ورود
+                </button>
+            </form>
+
+            <!-- فرم ثبت نام -->
+            <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> نام کاربری</label>
+                    <input type="text" id="registerUsername" placeholder="نام کاربری جدید" required minlength="3">
+                    <span class="hint">حداقل ۳ کاراکتر</span>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> رمز عبور</label>
+                    <input type="password" id="registerPassword" placeholder="رمز عبور جدید" required minlength="6">
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('registerPassword', this)"></i>
+                    <span class="hint">حداقل ۶ کاراکتر</span>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-check-circle"></i> تکرار رمز عبور</label>
+                    <input type="password" id="registerConfirmPassword" placeholder="تکرار رمز عبور" required>
+                </div>
+                <button type="submit" class="auth-btn gold-btn">
+                    <i class="fas fa-user-plus"></i> ثبت نام
+                </button>
+                <div class="register-bonus">
+                    <i class="fas fa-gift gold-icon"></i>
+                    <span>با ثبت نام <strong>۱۰۰ سکه طلا</strong> هدیه بگیرید!</span>
+                </div>
+            </form>
+
+            <div class="auth-footer">
+                <span class="designer-credit">
+                    <i class="fas fa-code"></i> Design by 
+                    <span class="gold-text">S A D R A</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="auth-background">
+            <div class="glow-sphere"></div>
+            <div class="glow-sphere2"></div>
+        </div>
+    </div>
+
+    <script>
+        // توابع صفحه ورود
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+            
+            document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+            document.getElementById(`${tab}Form`).classList.add('active');
+        }
+
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.setItem('userId', data.userId);
+                    localStorage.setItem('username', data.user.username);
+                    localStorage.setItem('coins', data.user.coins);
+                    window.location.href = '/';
+                } else {
+                    showAuthError(data.message);
+                }
+            } catch (error) {
+                showAuthError('خطا در ارتباط با سرور');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirm = document.getElementById('registerConfirmPassword').value;
+
+            if (password !== confirm) {
+                showAuthError('رمز عبور و تکرار آن مطابقت ندارند');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAuthError('رمز عبور باید حداقل ۶ کاراکتر باشد');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.setItem('userId', data.userId);
+                    localStorage.setItem('username', data.user.username);
+                    localStorage.setItem('coins', data.user.coins);
+                    showAuthSuccess('ثبت نام با موفقیت انجام شد! به بازی خوش آمدید 🎉');
+                    setTimeout(() => window.location.href = '/', 1500);
+                } else {
+                    showAuthError(data.message);
+                }
+            } catch (error) {
+                showAuthError('خطا در ارتباط با سرور');
+            }
+        }
+
+        function showAuthError(message) {
+            const existing = document.querySelector('.auth-error');
+            if (existing) existing.remove();
+            
+            const div = document.createElement('div');
+            div.className = 'auth-error';
+            div.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            document.querySelector('.auth-card').appendChild(div);
+            setTimeout(() => div.remove(), 5000);
+        }
+
+        function showAuthSuccess(message) {
+            const existing = document.querySelector('.auth-success');
+            if (existing) existing.remove();
+            
+            const div = document.createElement('div');
+            div.className = 'auth-success';
+            div.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            document.querySelector('.auth-card').appendChild(div);
+        }
+
+        // بررسی کاربر قبلی
+        if (localStorage.getItem('userId')) {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

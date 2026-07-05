@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛒 فروشگاه | Tic-Tac-Toe Royale</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/shop.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!-- هدر -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <i class="fas fa-crown gold-icon"></i>
+                <h1 class="logo-text">TIC-TAC-TOE <span class="gold-text">ROYALE</span></h1>
+                <span class="designer-tag">by S A D R A</span>
+            </div>
+            <div class="user-section" id="userSection">
+                <div class="user-info" onclick="toggleUserMenu()">
+                    <i class="fas fa-user-circle gold-icon"></i>
+                    <span id="usernameDisplay">مهمان</span>
+                    <i class="fas fa-chevron-down gold-icon"></i>
+                </div>
+                <div class="coins-display">
+                    <i class="fas fa-coins gold-icon"></i>
+                    <span id="coinsDisplay">0</span>
+                </div>
+                <button onclick="logout()" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- منوی کاربری -->
+    <div class="user-menu" id="userMenu">
+        <a href="profile.html"><i class="fas fa-user"></i> پروفایل</a>
+        <a href="shop.html"><i class="fas fa-store"></i> فروشگاه</a>
+        <a href="#" onclick="showLeaderboard()"><i class="fas fa-trophy"></i> جدول امتیازات</a>
+        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> خروج</a>
+    </div>
+
+    <!-- بخش اصلی فروشگاه -->
+    <main class="shop-container">
+        <div class="shop-header">
+            <h1 class="shop-title">
+                <i class="fas fa-store gold-icon"></i>
+                فروشگاه طلایی
+            </h1>
+            <p class="shop-subtitle">با سکه‌های خود آیتم‌های ویژه بخرید</p>
+            <div class="shop-coins">
+                <i class="fas fa-coins gold-icon"></i>
+                <span id="shopCoinsDisplay">0</span>
+                <span class="coin-label">سکه طلا</span>
+            </div>
+        </div>
+
+        <div class="shop-grid" id="shopGrid">
+            <!-- آیتم‌ها توسط JavaScript ساخته می‌شوند -->
+        </div>
+
+        <!-- بخش تخفیف‌ها -->
+        <div class="shop-special">
+            <div class="special-banner">
+                <i class="fas fa-gem"></i>
+                <div class="special-text">
+                    <h3>تخفیف ویژه!</h3>
+                    <p>هر ۵ خرید، یک آیتم رایگان دریافت کنید</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- فوتر -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <span class="designer-credit">
+                <i class="fas fa-code"></i> Designed by 
+                <span class="gold-text">S A D R A</span> 
+                <i class="fas fa-crown gold-icon"></i>
+            </span>
+            <span class="footer-version">v2.0.0</span>
+        </div>
+    </footer>
+
+    <!-- مودال خرید -->
+    <div class="modal" id="buyModal">
+        <div class="modal-content shop-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-shopping-cart gold-icon"></i> تایید خرید</h2>
+                <span class="close-modal" onclick="closeBuyModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="buyModalBody">
+                <!-- محتوای مودال -->
+            </div>
+        </div>
+    </div>
+
+    <!-- اطلاعیه‌ها -->
+    <div class="notification" id="notification"></div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/shop.js"></script>
+</body>
+</html>

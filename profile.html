@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👤 پروفایل | Tic-Tac-Toe Royale</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!-- هدر -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <i class="fas fa-crown gold-icon"></i>
+                <h1 class="logo-text">TIC-TAC-TOE <span class="gold-text">ROYALE</span></h1>
+                <span class="designer-tag">by S A D R A</span>
+            </div>
+            <div class="user-section" id="userSection">
+                <div class="user-info" onclick="toggleUserMenu()">
+                    <i class="fas fa-user-circle gold-icon"></i>
+                    <span id="usernameDisplay">مهمان</span>
+                    <i class="fas fa-chevron-down gold-icon"></i>
+                </div>
+                <div class="coins-display">
+                    <i class="fas fa-coins gold-icon"></i>
+                    <span id="coinsDisplay">0</span>
+                </div>
+                <button onclick="logout()" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- منوی کاربری -->
+    <div class="user-menu" id="userMenu">
+        <a href="profile.html"><i class="fas fa-user"></i> پروفایل</a>
+        <a href="shop.html"><i class="fas fa-store"></i> فروشگاه</a>
+        <a href="#" onclick="showLeaderboard()"><i class="fas fa-trophy"></i> جدول امتیازات</a>
+        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> خروج</a>
+    </div>
+
+    <!-- بخش اصلی پروفایل -->
+    <main class="profile-container">
+        <div class="profile-card">
+            <!-- بخش بالایی پروفایل -->
+            <div class="profile-cover">
+                <div class="profile-avatar-wrapper">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user-astronaut"></i>
+                    </div>
+                    <div class="profile-level">سطح ۱</div>
+                </div>
+                <div class="profile-info">
+                    <h1 class="profile-name" id="profileName">کاربر</h1>
+                    <p class="profile-username" id="profileUsername">@username</p>
+                    <div class="profile-badges" id="profileBadges">
+                        <!-- بج‌ها توسط JS ساخته می‌شوند -->
+                    </div>
+                </div>
+                <div class="profile-coins-large">
+                    <i class="fas fa-coins gold-icon"></i>
+                    <span id="profileCoins">0</span>
+                    <span class="coin-label">سکه طلا</span>
+                </div>
+            </div>
+
+            <!-- آمار بازی -->
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="statWins">0</div>
+                    <div class="stat-label">🏆 برد</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statLosses">0</div>
+                    <div class="stat-label">💔 باخت</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statDraws">0</div>
+                    <div class="stat-label">🤝 مساوی</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statGames">0</div>
+                    <div class="stat-label">🎮 کل بازی‌ها</div>
+                </div>
+            </div>
+
+            <!-- آیتم‌های خریداری شده -->
+            <div class="profile-items-section">
+                <h3 class="section-title">
+                    <i class="fas fa-gem gold-icon"></i>
+                    آیتم‌های من
+                </h3>
+                <div class="profile-items-grid" id="profileItems">
+                    <!-- آیتم‌ها توسط JS ساخته می‌شوند -->
+                </div>
+            </div>
+
+            <!-- دکمه‌های اقدام -->
+            <div class="profile-actions">
+                <button class="gold-btn" onclick="window.location.href='/shop'">
+                    <i class="fas fa-store"></i> رفتن به فروشگاه
+                </button>
+                <button class="gold-btn-outline" onclick="window.location.href='/'">
+                    <i class="fas fa-gamepad"></i> رفتن به بازی
+                </button>
+                <button class="gold-btn-outline" onclick="logout()" style="border-color: #ff4444; color: #ff4444;">
+                    <i class="fas fa-sign-out-alt"></i> خروج از حساب
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- فوتر -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <span class="designer-credit">
+                <i class="fas fa-code"></i> Designed by 
+                <span class="gold-text">S A D R A</span> 
+                <i class="fas fa-crown gold-icon"></i>
+            </span>
+            <span class="footer-version">v2.0.0</span>
+        </div>
+    </footer>
+
+    <!-- اطلاعیه‌ها -->
+    <div class="notification" id="notification"></div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>

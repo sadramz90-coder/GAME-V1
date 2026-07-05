@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Tic-Tac-Toe Royale | S A D R A</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!-- Overlay برای لودینگ -->
+    <div id="loadingOverlay">
+        <div class="loader">
+            <div class="gold-ring"></div>
+            <div class="gold-ring2"></div>
+            <span>👑 S A D R A</span>
+        </div>
+    </div>
+
+    <!-- هدر اصلی -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <i class="fas fa-crown gold-icon"></i>
+                <h1 class="logo-text">TIC-TAC-TOE <span class="gold-text">ROYALE</span></h1>
+                <span class="designer-tag">by S A D R A</span>
+            </div>
+            <div class="user-section" id="userSection">
+                <div class="user-info" onclick="toggleUserMenu()">
+                    <i class="fas fa-user-circle gold-icon"></i>
+                    <span id="usernameDisplay">مهمان</span>
+                    <i class="fas fa-chevron-down gold-icon"></i>
+                </div>
+                <div class="coins-display">
+                    <i class="fas fa-coins gold-icon"></i>
+                    <span id="coinsDisplay">0</span>
+                </div>
+                <button onclick="logout()" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- منوی کاربری -->
+    <div class="user-menu" id="userMenu">
+        <a href="profile.html"><i class="fas fa-user"></i> پروفایل</a>
+        <a href="shop.html"><i class="fas fa-store"></i> فروشگاه</a>
+        <a href="#" onclick="showLeaderboard()"><i class="fas fa-trophy"></i> جدول امتیازات</a>
+        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> خروج</a>
+    </div>
+
+    <!-- بخش اصلی بازی -->
+    <main class="game-container">
+        <div class="game-wrapper">
+            <!-- وضعیت بازی -->
+            <div class="game-status" id="gameStatus">
+                <div class="status-card">
+                    <i class="fas fa-gamepad gold-icon"></i>
+                    <span id="statusText">برای شروع بازی، روی "شروع بازی" کلیک کنید</span>
+                </div>
+            </div>
+
+            <!-- اطلاعات بازیکنان -->
+            <div class="players-info">
+                <div class="player-card player-x">
+                    <div class="player-avatar">
+                        <i class="fas fa-user-astronaut"></i>
+                    </div>
+                    <div class="player-details">
+                        <span class="player-name" id="playerXName">شما</span>
+                        <span class="player-symbol">X</span>
+                        <span class="player-status" id="playerXStatus">⏳ در انتظار</span>
+                    </div>
+                    <div class="player-score">
+                        <span class="score-value" id="playerXScore">0</span>
+                    </div>
+                </div>
+
+                <div class="vs-badge">
+                    <span>⚔️</span>
+                    <span class="gold-text">VS</span>
+                </div>
+
+                <div class="player-card player-o">
+                    <div class="player-avatar">
+                        <i class="fas fa-user-ninja"></i>
+                    </div>
+                    <div class="player-details">
+                        <span class="player-name" id="playerOName">حریف</span>
+                        <span class="player-symbol">O</span>
+                        <span class="player-status" id="playerOStatus">⏳ در انتظار</span>
+                    </div>
+                    <div class="player-score">
+                        <span class="score-value" id="playerOScore">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تخته بازی -->
+            <div class="board-container">
+                <div class="board" id="gameBoard">
+                    <div class="cell" data-index="0"></div>
+                    <div class="cell" data-index="1"></div>
+                    <div class="cell" data-index="2"></div>
+                    <div class="cell" data-index="3"></div>
+                    <div class="cell" data-index="4"></div>
+                    <div class="cell" data-index="5"></div>
+                    <div class="cell" data-index="6"></div>
+                    <div class="cell" data-index="7"></div>
+                    <div class="cell" data-index="8"></div>
+                </div>
+            </div>
+
+            <!-- دکمه‌های کنترل -->
+            <div class="game-controls">
+                <button id="startGameBtn" class="gold-btn" onclick="startGame()">
+                    <i class="fas fa-play"></i> شروع بازی
+                </button>
+                <button id="rematchBtn" class="gold-btn-outline" onclick="requestRematch()" style="display:none;">
+                    <i class="fas fa-redo"></i> بازی مجدد
+                </button>
+                <button id="cancelBtn" class="gold-btn-outline" onclick="cancelMatchmaking()" style="display:none;">
+                    <i class="fas fa-times"></i> لغو جستجو
+                </button>
+            </div>
+
+            <!-- اطلاعیه‌ها -->
+            <div class="notification" id="notification"></div>
+        </div>
+    </main>
+
+    <!-- فوتر -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <span class="designer-credit">
+                <i class="fas fa-code"></i> Designed by 
+                <span class="gold-text">S A D R A</span> 
+                <i class="fas fa-crown gold-icon"></i>
+            </span>
+            <span class="footer-version">v2.0.0</span>
+        </div>
+    </footer>
+
+    <!-- جدول امتیازات (مودال) -->
+    <div class="modal" id="leaderboardModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-trophy gold-icon"></i> جدول امتیازات</h2>
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="leaderboardBody">
+                <div class="loading-spinner">⏳ در حال بارگذاری...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/websocket.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

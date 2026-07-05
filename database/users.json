@@ -1,0 +1,13 @@
+{
+  "example": {
+    "id": "example",
+    "username": "guest",
+    "password": "$2a$10$example",
+    "coins": 100,
+    "wins": 0,
+    "losses": 0,
+    "draws": 0,
+    "items": [],
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+}
