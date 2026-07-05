@@ -5,7 +5,6 @@
 
 // ===== WEBSOCKET CONFIGURATION =====
 const WS_CONFIG = {
-    // ✅ اصلاح: تشخیص خودکار پروتکل (http -> ws, https -> wss)
     get url() {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const host = window.location.host;
@@ -48,11 +47,11 @@ class GameWebSocket {
                 this.isConnecting = false;
                 this.reconnectAttempts = 0;
                 
-                // Authenticate
                 this.authenticate();
-                
-                // Show connection status
                 this.updateStatus('connected');
+                
+                // ✅ مخفی کردن لودینگ بعد از اتصال موفق
+                hideLoadingOverlay();
             };
             
             this.socket.onmessage = (event) => {
@@ -68,11 +67,7 @@ class GameWebSocket {
                 console.log('🔌 WebSocket disconnected');
                 this.isConnected = false;
                 this.isConnecting = false;
-                
-                // Update status
                 this.updateStatus('disconnected');
-                
-                // Attempt reconnect
                 if (this.userId) {
                     this.attemptReconnect();
                 }
@@ -115,47 +110,36 @@ class GameWebSocket {
     handleMessage(data) {
         console.log('📩 Received:', data.type, data);
         
-        // Handle different message types
         switch(data.type) {
             case 'auth_success':
                 this.onAuthSuccess(data);
                 break;
-                
             case 'waiting':
                 this.onWaiting(data);
                 break;
-                
             case 'game_start':
                 this.onGameStart(data);
                 break;
-                
             case 'move_made':
                 this.onMoveMade(data);
                 break;
-                
             case 'game_state':
                 this.onGameState(data);
                 break;
-                
             case 'game_end':
                 this.onGameEnd(data);
                 break;
-                
             case 'error':
                 this.onError(data);
                 break;
-                
             case 'rematch_offered':
                 this.onRematchOffered(data);
                 break;
-                
             case 'rematch_accepted':
                 this.onRematchAccepted(data);
                 break;
-                
             default:
                 console.log('Unknown message type:', data.type);
-                // Call custom handler if exists
                 this.callHandler(data.type, data);
         }
     }
@@ -201,6 +185,8 @@ class GameWebSocket {
         if (this.reconnectAttempts >= WS_CONFIG.maxReconnectAttempts) {
             console.log('Max reconnect attempts reached');
             this.updateStatus('error');
+            // ✅ حتی با خطا هم لودینگ رو مخفی کن
+            hideLoadingOverlay();
             return;
         }
         
@@ -227,6 +213,8 @@ class GameWebSocket {
     onAuthSuccess(data) {
         console.log('✅ Authentication successful');
         showNotification('به سرور متصل شدید!', 'success');
+        // ✅ بعد از احراز هویت موفق، لودینگ رو مخفی کن
+        hideLoadingOverlay();
     }
 
     onWaiting(data) {
@@ -237,20 +225,20 @@ class GameWebSocket {
             statusText.style.color = '#FFA726';
         }
         
-        // Show cancel button
         const cancelBtn = document.getElementById('cancelBtn');
         if (cancelBtn) cancelBtn.style.display = 'flex';
         
         showNotification('در حال جستجوی حریف...', 'info');
+        
+        // ✅ لودینگ رو مخفی کن چون کاربر منتظر حریفه
+        hideLoadingOverlay();
     }
 
     onGameStart(data) {
         console.log('🎮 Game started!', data);
         
-        // Store game ID
         this.gameId = data.gameId;
         
-        // Set player info
         const playerXName = document.getElementById('playerXName');
         const playerOName = document.getElementById('playerOName');
         const playerXStatus = document.getElementById('playerXStatus');
@@ -265,7 +253,6 @@ class GameWebSocket {
             if (playerOStatus) playerOStatus.textContent = '⏳ منتظر حریف';
             if (playerOStatus) playerOStatus.className = 'player-status waiting';
             
-            // Add active turn class
             document.querySelector('.player-card.player-x')?.classList.add('active-turn');
             document.querySelector('.player-card.player-o')?.classList.remove('active-turn');
         } else {
@@ -276,7 +263,6 @@ class GameWebSocket {
             if (playerOStatus) playerOStatus.textContent = '🎯 نوبت شماست';
             if (playerOStatus) playerOStatus.className = 'player-status ready';
             
-            // Add active turn class
             document.querySelector('.player-card.player-o')?.classList.add('active-turn');
             document.querySelector('.player-card.player-x')?.classList.remove('active-turn');
         }
@@ -286,7 +272,6 @@ class GameWebSocket {
             statusText.style.color = 'var(--gold)';
         }
         
-        // Hide cancel button, show rematch button
         const cancelBtn = document.getElementById('cancelBtn');
         const rematchBtn = document.getElementById('rematchBtn');
         const startBtn = document.getElementById('startGameBtn');
@@ -296,27 +281,22 @@ class GameWebSocket {
         if (startBtn) startBtn.textContent = '⏳ در حال بازی...';
         if (startBtn) startBtn.disabled = true;
         
-        // Clear board
         clearBoard();
-        
         showNotification('بازی شروع شد! موفق باشید 🎯', 'success');
+        
+        // ✅ لودینگ رو مخفی کن چون بازی شروع شده
+        hideLoadingOverlay();
     }
 
     onMoveMade(data) {
         console.log('🎯 Move made:', data);
-        
-        // Update board
         updateBoard(data.position, data.player);
         
-        // Update status
         const playerXStatus = document.getElementById('playerXStatus');
         const playerOStatus = document.getElementById('playerOStatus');
         const statusText = document.getElementById('statusText');
         
-        const isXTurn = data.player !== AuthState.userId;
-        
         if (data.player === AuthState.userId) {
-            // Player made the move
             if (playerXStatus && document.querySelector('.player-card.player-x .player-symbol')?.textContent === 'X') {
                 playerXStatus.textContent = '⏳ منتظر حریف';
                 playerXStatus.className = 'player-status waiting';
@@ -334,7 +314,6 @@ class GameWebSocket {
                 statusText.style.color = '#FFA726';
             }
         } else {
-            // Opponent made move
             if (playerXStatus && document.querySelector('.player-card.player-x .player-symbol')?.textContent === 'X') {
                 playerXStatus.textContent = '⏳ منتظر حریف';
                 playerXStatus.className = 'player-status waiting';
@@ -356,8 +335,6 @@ class GameWebSocket {
 
     onGameState(data) {
         console.log('📊 Game state updated:', data);
-        
-        // Update board if needed
         if (data.board) {
             updateBoardFromState(data.board);
         }
@@ -370,7 +347,6 @@ class GameWebSocket {
         const startBtn = document.getElementById('startGameBtn');
         const rematchBtn = document.getElementById('rematchBtn');
         
-        // Show win cells
         if (data.winner) {
             const winnerSymbol = data.winner;
             const isWinner = (winnerSymbol === 'X' && AuthState.userId === window.currentGame?.playerX) ||
@@ -380,34 +356,26 @@ class GameWebSocket {
                 statusText.textContent = '🎉 شما برنده شدید! +۱۰ سکه';
                 statusText.style.color = 'var(--gold)';
                 showNotification('🎉 برنده شدید! ۱۰ سکه دریافت کردید', 'success');
-                
-                // Update coins
                 updateCoins(10);
             } else {
                 statusText.textContent = '😢 شما باختید! +۲ سکه';
                 statusText.style.color = '#ff4444';
                 showNotification('😢 متاسفانه باختید! ۲ سکه دریافت کردید', 'error');
-                
-                // Update coins
                 updateCoins(2);
             }
         } else if (data.isDraw) {
             statusText.textContent = '🤝 بازی مساوی شد! +۵ سکه';
             statusText.style.color = '#FFA726';
             showNotification('🤝 بازی مساوی شد! ۵ سکه دریافت کردید', 'info');
-            
-            // Update coins
             updateCoins(5);
         }
         
-        // Show rematch button
         if (rematchBtn) rematchBtn.style.display = 'flex';
         if (startBtn) {
             startBtn.textContent = '🔄 بازی جدید';
             startBtn.disabled = false;
         }
         
-        // Mark board as game over
         document.querySelectorAll('.cell').forEach(cell => {
             cell.classList.add('game-over');
         });
@@ -418,11 +386,11 @@ class GameWebSocket {
     onError(data) {
         console.error('❌ Server error:', data);
         showNotification(data.message || 'خطا در سرور', 'error');
+        hideLoadingOverlay();
     }
 
     onRematchOffered(data) {
         showNotification('حریف درخواست بازی مجدد دارد!', 'info');
-        // Auto-accept for simplicity
         this.send({
             type: 'rematch_accepted',
             gameId: this.gameId
@@ -437,7 +405,6 @@ class GameWebSocket {
         });
     }
 
-    // ===== UTILITY METHODS =====
     get isReady() {
         return this.isConnected && this.socket && this.socket.readyState === WebSocket.OPEN;
     }
@@ -478,17 +445,31 @@ function updateBoardFromState(board) {
     });
 }
 
+// ===== HIDE LOADING OVERLAY =====
+function hideLoadingOverlay() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+        console.log('✅ Loading overlay hidden');
+    }
+}
+
 // ===== EXPOSE WEBSOCKET =====
 const gameSocket = new GameWebSocket();
 window.gameSocket = gameSocket;
+window.hideLoadingOverlay = hideLoadingOverlay;
 
 // ===== INITIALIZE WEBSOCKET =====
 document.addEventListener('DOMContentLoaded', function() {
     const userId = localStorage.getItem('userId');
     if (userId) {
-        // اتصال با تأخیر کوچک برای اطمینان از آماده بودن صفحه
         setTimeout(() => {
             gameSocket.connect(userId);
         }, 500);
+    } else {
+        // اگه کاربر لاگین نیست، بره به صفحه ورود
+        if (!window.location.pathname.includes('login')) {
+            window.location.href = '/login.html';
+        }
     }
 });
